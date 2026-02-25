@@ -46,7 +46,7 @@ Based on feedback:
 ### Step 5: Complete
 
 After all tasks are done:
-- Use `/finishing-work` to verify and present completion options
+- Use `/finishing-a-development-branch` to verify and present completion options
 
 ## When to Stop and Ask
 
