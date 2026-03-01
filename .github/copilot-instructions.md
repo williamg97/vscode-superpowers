@@ -14,7 +14,10 @@ You have access to specialized skills in `.github/skills/`. Check if a skill app
 | About to commit, merge, or claim done | `/verification-before-completion` — evidence before claims |
 | Requesting feedback on work | `/requesting-code-review` — review checklist |
 | Receiving review feedback | `/receiving-code-review` — verify before implementing |
-| Implementation complete | `/finishing-work` — verify tests, present options |
+| Implementation complete | `/finishing-a-development-branch` — verify tests, present options |
+| 2+ independent tasks | `/dispatching-parallel-agents` — parallelize work |
+| Executing a plan task-by-task | `/subagent-driven-development` — fresh context per task |
+| Creating or editing skills | `/writing-skills` — TDD for documentation |
 
 ## Core Principles (always active)
 

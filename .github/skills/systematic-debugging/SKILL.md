@@ -11,6 +11,8 @@ Random fixes waste time and create new bugs. Quick patches mask underlying issue
 
 **Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
 
+**Violating the letter of this process is violating the spirit of debugging.**
+
 ## The Iron Law
 
 ```
@@ -28,6 +30,11 @@ Use for ANY technical issue: test failures, bugs, unexpected behavior, performan
 - "Just one quick fix" seems obvious
 - You've already tried multiple fixes
 - Previous fix didn't work
+- You don't fully understand the issue
+
+**Don't skip when:**
+- Issue seems simple (simple bugs have root causes too)
+- You're in a hurry (rushing guarantees rework)
 
 ## The Four Phases
 
@@ -59,6 +66,7 @@ Complete each phase before proceeding to the next.
 1. **Form single hypothesis** — "I think X is the root cause because Y." Be specific.
 2. **Test minimally** — make the SMALLEST possible change to test hypothesis. One variable at a time.
 3. **Verify** — did it work? Yes → Phase 4. No → form NEW hypothesis. Don't stack fixes.
+4. **When you don't know** — say "I don't understand X." Don't pretend to know. Ask for help.
 
 ### Phase 4: Implementation
 
@@ -67,14 +75,66 @@ Complete each phase before proceeding to the next.
 3. **Verify fix** — test passes? No other tests broken? Issue actually resolved?
 4. **If 3+ fixes failed** — STOP. This is an architectural problem, not a bug. Question the pattern, don't try fix #4. Discuss with your human partner before continuing.
 
+**Pattern indicating architectural problem:**
+- Each fix reveals new shared state / coupling / problem in different place
+- Fixes require "massive refactoring" to implement
+- Each fix creates new symptoms elsewhere
+
 ## Red Flags — STOP and Return to Phase 1
 
 - "Quick fix for now, investigate later"
 - "Just try changing X and see if it works"
 - "Add multiple changes, run tests"
+- "Skip the test, I'll manually verify"
+- "It's probably X, let me fix that"
 - Proposing solutions before tracing data flow
 - "One more fix attempt" when already tried 2+
 - Each fix reveals new problem in different place
+
+**ALL of these mean: STOP. Return to Phase 1.**
+
+## Your Human Partner's Signals You're Doing It Wrong
+
+Watch for these redirections:
+- "Is that not happening?" — You assumed without verifying
+- "Will it show us...?" — You should have added evidence gathering
+- "Stop guessing" — You're proposing fixes without understanding
+- "Ultrathink this" — Question fundamentals, not just symptoms
+
+**When you see these:** STOP. Return to Phase 1.
+
+## Common Rationalizations
+
+| Excuse | Reality |
+|--------|---------|
+| "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
+| "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
+| "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
+| "I'll write test after confirming fix works" | Untested fixes don't stick. Test first proves it. |
+| "Multiple fixes at once saves time" | Can't isolate what worked. Causes new bugs. |
+| "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
+| "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
+| "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. Question pattern, don't fix again. |
+
+## Quick Reference
+
+| Phase | Key Activities | Success Criteria |
+|-------|----------------|------------------|
+| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
+| **2. Pattern** | Find working examples, compare | Identify differences |
+| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
+| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+
+## When Process Reveals "No Root Cause"
+
+If systematic investigation reveals issue is truly environmental, timing-dependent, or external:
+
+1. You've completed the process
+2. Document what you investigated
+3. Implement appropriate handling (retry, timeout, error message)
+4. Add logging for future investigation
+
+**But:** 95% of "no root cause" cases are incomplete investigation.
 
 ## Supporting Techniques
 

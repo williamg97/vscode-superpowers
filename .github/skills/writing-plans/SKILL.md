@@ -24,8 +24,10 @@ Each step is one action:
 
 Every plan MUST start with:
 
-```
+```markdown
 # [Feature Name] Implementation Plan
+
+> **For Copilot:** REQUIRED: Use `/executing-plans` to implement this plan task-by-task.
 
 **Goal:** [One sentence describing what this builds]
 **Architecture:** [2-3 sentences about approach]
@@ -74,4 +76,13 @@ Expected: PASS
 
 ## After Writing the Plan
 
-Save the plan and offer to proceed with `/executing-plans`.
+Save the plan to `docs/plans/YYYY-MM-DD-<feature-name>.md` and commit it. Then offer:
+
+```
+Plan written to docs/plans/<filename>. Ready to execute?
+
+1. Execute now with `/executing-plans`
+2. Review the plan first, then execute
+```
+
+The plan file's header already contains the instruction to use `/executing-plans` — so a future Copilot session loading the plan will know how to proceed.

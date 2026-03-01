@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Use before any creative work — creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements, and design before implementation."
+description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements, and design before implementation."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -11,11 +11,11 @@ Help turn ideas into fully formed designs through collaborative dialogue.
 
 Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what's being built, present the design and get user approval.
 
-**Do NOT write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it.** This applies to every project regardless of perceived simplicity.
+**DO NOT write any code, scaffold any project, create any files, or take any implementation action until you have presented a design and the user has explicitly approved it.** This applies to every project regardless of perceived simplicity. No exceptions.
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
 
-Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
+Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval before writing a single line of code.
 
 ## Process
 
@@ -24,7 +24,9 @@ Every project goes through this process. A todo list, a single-function utility,
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to complexity, get user approval after each section
 5. **Write design doc** — save to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit
-6. **Transition to implementation** — use `/writing-plans` to create the implementation plan
+6. **Transition to implementation** — invoke `/writing-plans` to create the implementation plan
+
+**The terminal state of this skill is invoking `/writing-plans`.** Do not proceed to any other skill or implementation activity. No code. No scaffolding. No prototypes. Only `/writing-plans`.
 
 ## Understanding the Idea
 
@@ -51,7 +53,7 @@ Every project goes through this process. A todo list, a single-function utility,
 
 - Write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
 - Commit the design document to git
-- Use `/writing-plans` to create a detailed implementation plan. That is the ONLY next step.
+- Invoke `/writing-plans`. That is the ONLY next step.
 
 ## Key Principles
 
