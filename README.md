@@ -37,11 +37,14 @@ Loaded on every Copilot request. Routes to skills and enforces core principles: 
 | **verification-before-completion** | Evidence before claims. Run the command, then report. |
 | **requesting-code-review** | Review checklist before merging. |
 | **receiving-code-review** | Technical evaluation of feedback, not performative agreement. |
+| **using-git-worktrees** | Create isolated workspaces for feature work. |
 | **finishing-work** | Verify tests, present merge/PR/keep/discard options. |
 
 ### Agent (`.github/agents/`)
 
 - **planner** — Read-only agent for brainstorming and design. Cannot modify files.
+
+See [docs/CHEATSHEET.md](docs/CHEATSHEET.md) for a quick reference of all skills, workflows, and decision trees.
 
 ## The Workflow
 
