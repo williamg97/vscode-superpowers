@@ -13,6 +13,16 @@ Claiming work is complete without verification is dishonesty, not efficiency.
 
 **Violating the letter of this rule is violating the spirit of this rule.**
 
+## Why This Matters
+
+Every time verification is skipped, it leads to one of:
+- "Tests pass" → they don't → broken merge
+- "Bug is fixed" → it isn't → user finds it again
+- "Build succeeds" → it doesn't → deploy fails
+- "Requirements met" → they aren't → rework
+
+These aren't edge cases. They happen every time verification is skipped. The cost of running a command is seconds. The cost of a false claim is hours.
+
 ## The Iron Law
 
 ```
@@ -75,32 +85,38 @@ Skip any step = lying, not verifying.
 
 **Tests:**
 ```
-✅ [Run test command] [See: 34/34 pass] "All tests pass"
-❌ "Should pass now" / "Looks correct"
+GOOD: [Run test command] [See: 34/34 pass] "All tests pass"
+BAD:  "Should pass now" / "Looks correct"
 ```
 
 **Regression tests (TDD Red-Green):**
 ```
-✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
-❌ "I've written a regression test" (without red-green verification)
+GOOD: Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
+BAD:  "I've written a regression test" (without red-green verification)
 ```
 
 **Build:**
 ```
-✅ [Run build] [See: exit 0] "Build passes"
-❌ "Linter passed" (linter doesn't check compilation)
+GOOD: [Run build] [See: exit 0] "Build passes"
+BAD:  "Linter passed" (linter doesn't check compilation)
 ```
 
 **Requirements:**
 ```
-✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
-❌ "Tests pass, phase complete"
+GOOD: Re-read plan → Create checklist → Verify each → Report gaps or completion
+BAD:  "Tests pass, phase complete"
 ```
 
 **Agent delegation:**
 ```
-✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
-❌ Trust agent report
+GOOD: Agent reports success → Check VCS diff → Verify changes → Report actual state
+BAD:  Trust agent report
+```
+
+**Multi-step verification:**
+```
+GOOD: Lint ✓ → Build ✓ → Test ✓ → "All checks pass"
+BAD:  "Lint passes" → assume build and tests also pass
 ```
 
 ## When To Apply
@@ -111,12 +127,19 @@ Skip any step = lying, not verifying.
 - ANY positive statement about work state
 - Committing, PR creation, task completion
 - Moving to next task
+- Reporting status to user
 
 **Rule applies to:**
 - Exact phrases
 - Paraphrases and synonyms
 - Implications of success
 - ANY communication suggesting completion/correctness
+
+**No exceptions for:**
+- "Simple" changes (simple changes break things too)
+- "Obvious" fixes (obvious ≠ verified)
+- Time pressure (verification takes seconds)
+- Fatigue (especially under fatigue)
 
 ## The Bottom Line
 

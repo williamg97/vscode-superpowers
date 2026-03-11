@@ -13,7 +13,7 @@ A structured development workflow for VS Code Copilot, adapted from [Superpowers
 ./install.sh /path/to/your/project
 ```
 
-The installer copies `.github/skills/`, `.github/instructions/`, and `.github/agents/` into the target project's `.github/` directory. It merges `copilot-instructions.md` using marker comments (`<!-- copilot-superpowers-start/end -->`) to allow re-running without clobbering custom instructions.
+The installer copies `.github/skills/`, `.github/instructions/`, `.github/agents/`, and `.github/prompts/` into the target project's `.github/` directory. It merges `copilot-instructions.md` using marker comments (`<!-- copilot-superpowers-start/end -->`) to allow re-running without clobbering custom instructions.
 
 ## Architecture
 
@@ -38,11 +38,16 @@ The installer copies `.github/skills/`, `.github/instructions/`, and `.github/ag
 │   ├── using-git-worktrees/
 │   ├── using-superpowers/
 │   └── writing-skills/
+├── prompts/                    # Native VS Code /slash-commands (one per skill)
+│   ├── brainstorming.prompt.md
+│   ├── writing-plans.prompt.md
+│   └── ... (14 total)
 └── agents/
     └── planner.agent.md        # Read-only agent for brainstorming (no file editing)
 ```
 
-- **Skills** are self-contained markdown files (`SKILL.md`) that define a workflow, plus optional supporting reference docs (prompt templates, anti-patterns, examples). Invoked via Copilot's skill system (e.g., `/brainstorming`).
+- **Prompts** (`.github/prompts/*.prompt.md`) are native VS Code Copilot slash commands. Each references a corresponding skill's `SKILL.md`. This is how skills get `/slash-command` invocation in VS Code Chat.
+- **Skills** are self-contained markdown files (`SKILL.md`) that define a workflow, plus optional supporting reference docs (prompt templates, anti-patterns, examples).
 - **Instructions** use YAML frontmatter `applyTo` globs to scope when they activate.
 - **`copilot-instructions.md`** is the routing layer — it maps situations to skills and declares core principles (TDD, evidence before claims, YAGNI, design before code).
 - The `tools.yaml` at repo root is an unrelated Portainer MCP server tool definition file.

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copilot Superpowers &amp; Ralph — Analysis Report</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #161b22;
+    --surface-2: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-2: #bc8cff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --cyan: #39d2c0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a1e2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .hero .date {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    opacity: 0.7;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  nav.toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 3rem;
+  }
+
+  nav.toc h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  nav.toc ol {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.4rem 2rem;
+  }
+
+  nav.toc a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  nav.toc a:hover { text-decoration: underline; }
+
+  section {
+    margin-bottom: 3.5rem;
+  }
+
+  h2.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  h2.section-title .num {
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--accent-2);
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.2rem 0 0.5rem;
+    color: var(--cyan);
+  }
+
+  p, li {
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+
+  p { margin-bottom: 0.75rem; }
+
+  ul, ol {
+    margin: 0.5rem 0 1rem 1.5rem;
+  }
+
+  li { margin-bottom: 0.3rem; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--surface-2);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  td { background: var(--surface); }
+
+  tr:hover td { background: var(--surface-2); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  .card h4 {
+    margin-top: 0;
+    font-size: 1rem;
+  }
+
+  .card p { font-size: 0.9rem; color: var(--text-muted); }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-right: 0.3rem;
+  }
+
+  .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-orange { background: rgba(210,153,34,0.15); color: var(--orange); }
+  .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-purple { background: rgba(188,140,255,0.15); color: var(--accent-2); }
+
+  .verdict-box {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  .verdict-box.warn { border-left-color: var(--orange); }
+  .verdict-box.good { border-left-color: var(--green); }
+  .verdict-box.info { border-left-color: var(--cyan); }
+
+  .verdict-box strong { color: var(--accent); }
+  .verdict-box.warn strong { color: var(--orange); }
+  .verdict-box.good strong { color: var(--green); }
+  .verdict-box.info strong { color: var(--cyan); }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 0.75rem 0 1.25rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .flow-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin: 1rem 0;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    overflow-x: auto;
+  }
+
+  .comparison-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .comparison-header .pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .recommendation-stack {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+    margin: 1rem 0;
+    align-items: start;
+  }
+
+  .recommendation-stack .layer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+    font-family: monospace;
+    color: var(--cyan);
+    white-space: nowrap;
+  }
+
+  .recommendation-stack .desc {
+    font-size: 0.9rem;
+    padding-top: 0.5rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 2.5rem 1.5rem 2rem; }
+    .hero h1 { font-size: 1.6rem; }
+    .container { padding: 1.25rem; }
+    nav.toc ol { grid-template-columns: 1fr; }
+    .card-grid { grid-template-columns: 1fr; }
+    table { font-size: 0.8rem; }
+    th, td { padding: 0.4rem 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>AI Coding Assistant Analysis</h1>
+  <p>Comparative analysis of Copilot Superpowers, Ralph, and upstream implementations &mdash; with deployment recommendations for enterprise codebases</p>
+  <div class="date">March 2026</div>
+</div>
+
+<div class="container">
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1">1. Repos Under Analysis</a></li>
+    <li><a href="#s2">2. Superpowers vs Upstream (obra)</a></li>
+    <li><a href="#s3">3. Superpowers vs earchibald/vsc-superpowers</a></li>
+    <li><a href="#s4">4. Superpowers vs Ralph-Copilot</a></li>
+    <li><a href="#s5">5. Suitability: Greenfield vs Large Codebases</a></li>
+    <li><a href="#s6">6. Deployment Recommendation</a></li>
+    <li><a href="#s7">7. Internal Patterns Without MCP</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<section id="s1">
+  <h2 class="section-title"><span class="num">1</span> Repos Under Analysis</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>williamg97/vscode-superpowers</h4>
+      <p>14 skills, scoped instructions, and a planner agent for VS Code Copilot. Discipline framework: TDD, design-first, evidence-before-claims. Installed per-project via <code>install.sh</code>.</p>
+      <span class="badge badge-blue">Skills</span>
+      <span class="badge badge-purple">Advisory</span>
+    </div>
+    <div class="card">
+      <h4>obra/superpowers</h4>
+      <p>The original — built for Claude Code. Multi-platform plugin (Claude, Cursor, Codex, OpenCode). Same skill set plus extensive supporting docs, test suite, and marketplace distribution.</p>
+      <span class="badge badge-green">Upstream</span>
+      <span class="badge badge-blue">Multi-platform</span>
+    </div>
+    <div class="card">
+      <h4>earchibald/vsc-superpowers</h4>
+      <p>Another VS Code adaptation. Uses <code>.agents/</code> directory with global cache via symlinks. Includes Copilot CLI integration, verification hooks, and extensive reference documentation.</p>
+      <span class="badge badge-orange">CLI-enhanced</span>
+      <span class="badge badge-blue">VS Code</span>
+    </div>
+    <div class="card">
+      <h4>williamg97/ralph-copilot</h4>
+      <p>Multi-agent execution pipeline. PRD &rarr; Plan &rarr; Loop (Coder + 4-tier QA) &rarr; Archive. Autonomous or human-in-the-loop. 4-6x token cost for strict role separation.</p>
+      <span class="badge badge-purple">Pipeline</span>
+      <span class="badge badge-orange">Autonomous</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s2">
+  <h2 class="section-title"><span class="num">2</span> Superpowers vs Upstream (obra/superpowers)</h2>
+
+  <h3>Skills Alignment</h3>
+  <p>After recent sync work, 13 of 14 upstream skills are present locally. The gap has been closed to one structural difference:</p>
+
+  <table>
+    <thead>
+      <tr><th>Status</th><th>Count</th><th>Details</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="badge badge-green">Shared</span></td><td>14</td><td>All core workflow skills including the newly added <code>using-git-worktrees</code></td></tr>
+      <tr><td><span class="badge badge-red">Upstream only</span></td><td>0</td><td>All skills now ported</td></tr>
+      <tr><td><span class="badge badge-blue">Local only</span></td><td>1</td><td><code>using-superpowers</code> (meta-skill for routing; upstream equivalent is embedded in plugin)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Supporting Docs (recently added)</h3>
+  <table>
+    <thead>
+      <tr><th>Skill</th><th>Docs Added</th><th>Still Missing vs Upstream</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>systematic-debugging</td><td>find-polluter.sh, condition-based-waiting-example.ts, 3 pressure tests</td><td>test-academic.md (quiz)</td></tr>
+      <tr><td>test-driven-development</td><td>testing-anti-patterns.md</td><td>&mdash;</td></tr>
+      <tr><td>brainstorming</td><td>spec-document-reviewer-prompt.md</td><td>visual-companion.md</td></tr>
+      <tr><td>writing-plans</td><td>plan-document-reviewer-prompt.md</td><td>&mdash;</td></tr>
+      <tr><td>requesting-code-review</td><td>code-reviewer.md</td><td>&mdash;</td></tr>
+      <tr><td>subagent-driven-development</td><td>implementer, spec-reviewer, code-quality prompts</td><td>&mdash;</td></tr>
+      <tr><td>writing-skills</td><td>&mdash;</td><td>anthropic-best-practices.md, persuasion-principles.md, testing-skills-with-subagents.md, graphviz-conventions.dot</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Structural Differences</h3>
+  <table>
+    <thead><tr><th>Aspect</th><th>Upstream (obra)</th><th>Local (vscode-superpowers)</th></tr></thead>
+    <tbody>
+      <tr><td>Platform</td><td>Multi-platform plugin (Claude, Cursor, Codex, OpenCode)</td><td>VS Code Copilot only (<code>.github/</code> convention)</td></tr>
+      <tr><td>Distribution</td><td>Marketplace + <code>/plugin update</code></td><td><code>install.sh</code> file copy</td></tr>
+      <tr><td>Versioning</td><td>v5.0.0 in plugin.json</td><td>Git commits only</td></tr>
+      <tr><td>Tests</td><td>Full test suite in <code>tests/</code></td><td>None</td></tr>
+      <tr><td>TDD skill depth</td><td>371 lines</td><td>188 lines</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<section id="s3">
+  <h2 class="section-title"><span class="num">3</span> Superpowers vs earchibald/vsc-superpowers</h2>
+
+  <p>Two different adaptations of the same upstream, optimised for different constraints.</p>
+
+  <table>
+    <thead><tr><th>Aspect</th><th>vscode-superpowers</th><th>earchibald</th></tr></thead>
+    <tbody>
+      <tr><td>Install target</td><td><code>.github/</code> (GitHub convention)</td><td><code>.agents/</code> + symlink to <code>~/.cache/superpowers</code></td></tr>
+      <tr><td>Skill naming</td><td>Full names (<code>writing-plans</code>)</td><td>Short names (<code>write-plan</code>)</td></tr>
+      <tr><td>Installation</td><td>Direct copy, simple</td><td>Global cache + symlinks</td></tr>
+      <tr><td>Agents</td><td>Explicit planner agent (read-only)</td><td>Implicit via plugin manifest</td></tr>
+      <tr><td>Scoped instructions</td><td>2 files (TDD, verification)</td><td>None visible</td></tr>
+      <tr><td>CLI support</td><td>No</td><td>Yes (Copilot CLI hooks, verification automation)</td></tr>
+      <tr><td>Documentation</td><td>README + Cheatsheet</td><td>Cheatsheet + Skills Reference + Testing docs (50KB+)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>vscode-superpowers strengths</h4>
+      <ul>
+        <li>Explicit planner agent for read-only brainstorming</li>
+        <li><code>using-superpowers</code> meta-skill with routing table</li>
+        <li>Per-file-type scoped instructions</li>
+        <li>Simpler install (no symlinks or cache)</li>
+        <li>More detailed rationalization tables in skills</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>earchibald strengths</h4>
+      <ul>
+        <li>Copilot CLI integration with <code>preToolUse</code> hooks</li>
+        <li>Automated Iron Law enforcement via git hooks</li>
+        <li>Global cache reduces per-project bloat</li>
+        <li>Extensive reference documentation</li>
+        <li>Production-ready plugin architecture</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s4">
+  <h2 class="section-title"><span class="num">4</span> Superpowers vs Ralph-Copilot</h2>
+
+  <h3>Philosophy</h3>
+  <table>
+    <thead><tr><th></th><th>vscode-superpowers</th><th>ralph-copilot</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Core idea</strong></td><td>Discipline framework &mdash; teaches the AI <em>how to think</em></td><td>Execution pipeline &mdash; orchestrates the AI <em>what to do</em></td></tr>
+      <tr><td><strong>Approach</strong></td><td>Skills as behavioral guardrails</td><td>Multi-agent pipeline with strict role separation</td></tr>
+      <tr><td><strong>Human role</strong></td><td>Collaborator (brainstorms, approves, reviews)</td><td>Requester (describes feature, optionally approves at phases)</td></tr>
+      <tr><td><strong>Autonomy</strong></td><td>Low-medium</td><td>High (Auto mode runs end-to-end)</td></tr>
+      <tr><td><strong>Token cost</strong></td><td>~1x</td><td>4-6x</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Architecture Comparison</h3>
+
+  <div class="flow-diagram">
+    <strong>Superpowers:</strong>&nbsp; Brainstorm &rarr; Plan &rarr; Worktree &rarr; Execute (TDD) &rarr; Review &rarr; Finish
+  </div>
+  <div class="flow-diagram">
+    <strong>Ralph:</strong>&nbsp; PRD Agent &rarr; Ralph Plan &rarr; Ralph Loop [ Coder &rarr; Task Inspector &rarr; Phase Inspector ] &rarr; Journey Verifier &rarr; Archive
+  </div>
+
+  <h3>Capabilities Matrix</h3>
+  <table>
+    <thead><tr><th>Capability</th><th>Superpowers</th><th>Ralph</th></tr></thead>
+    <tbody>
+      <tr><td>Design/brainstorming</td><td><span class="badge badge-green">Yes</span> interactive</td><td><span class="badge badge-green">Yes</span> PRD agent</td></tr>
+      <tr><td>Plan decomposition</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span> with vertical slices</td></tr>
+      <tr><td>TDD enforcement</td><td><span class="badge badge-green">Yes</span> skill + scoped instruction</td><td><span class="badge badge-orange">Partial</span> preflight only</td></tr>
+      <tr><td>Systematic debugging</td><td><span class="badge badge-green">Yes</span> 4-phase methodology</td><td><span class="badge badge-red">No</span></td></tr>
+      <tr><td>Automated QA</td><td><span class="badge badge-red">No</span> human reviews</td><td><span class="badge badge-green">Yes</span> 4-tier pipeline</td></tr>
+      <tr><td>Reachability auditing</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span> Journey Verifier</td></tr>
+      <tr><td>Git worktree isolation</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-red">No</span></td></tr>
+      <tr><td>Auto mode (unattended)</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+      <tr><td>Loop control / circuit breaker</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span> PAUSE.md + 3-fail halt</td></tr>
+      <tr><td>Progress tracking</td><td><span class="badge badge-orange">Manual</span></td><td><span class="badge badge-green">PROGRESS.md</span></td></tr>
+      <tr><td>Brownfield auto-detection</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span> reads manifests</td></tr>
+      <tr><td>Anti-pattern reference docs</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-red">No</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Unique to Each</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Only in Superpowers</h4>
+      <ul>
+        <li>Systematic debugging (4-phase root cause)</li>
+        <li>TDD enforcement with anti-patterns catalog</li>
+        <li>Git worktree isolation workflow</li>
+        <li>Pressure-test scenarios for AI discipline</li>
+        <li>Per-file-type scoped instructions</li>
+        <li>Cheatsheet / quick reference</li>
+        <li>Code review agent templates</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Only in Ralph</h4>
+      <ul>
+        <li>Multi-agent orchestration (no human between tasks)</li>
+        <li>4-tier automated QA pipeline</li>
+        <li>Reachability auditing (is it wired up?)</li>
+        <li>PRD generation from feature descriptions</li>
+        <li>PROGRESS.md progress tracking</li>
+        <li>Circuit breaker / PAUSE.md safety</li>
+        <li>Auto vs HITL mode selection</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s5">
+  <h2 class="section-title"><span class="num">5</span> Suitability: Greenfield vs Large Codebases</h2>
+
+  <h3>Greenfield Projects</h3>
+  <table>
+    <thead><tr><th></th><th>Superpowers</th><th>Ralph</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Fit</strong></td><td><span class="badge badge-green">Good</span></td><td><span class="badge badge-green">Excellent</span></td></tr>
+      <tr><td><strong>Why</strong></td><td>Design-first prevents overengineering; TDD builds solid foundation</td><td>PRD &rarr; Plan &rarr; Execute pipeline maps naturally to "nothing &rarr; everything"; vertical slices ensure each phase works</td></tr>
+      <tr><td><strong>Risk</strong></td><td>Requires discipline to follow skills; no enforcement</td><td>High token cost; Journey Verifier may flag false positives on incomplete scaffolding</td></tr>
+    </tbody>
+  </table>
+
+  <div class="verdict-box good">
+    <strong>Greenfield verdict:</strong> Ralph is stronger. The pipeline naturally maps to building from scratch. The PRD agent asks the right greenfield questions. Superpowers' brainstorming does similar work but requires more human guidance.
+  </div>
+
+  <h3>Large Existing Codebases</h3>
+  <table>
+    <thead><tr><th></th><th>Superpowers</th><th>Ralph</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Fit</strong></td><td><span class="badge badge-green">Good</span></td><td><span class="badge badge-orange">Risky</span></td></tr>
+      <tr><td><strong>Why</strong></td><td>Advisory model &mdash; guides without assuming project structure; debugging/TDD work on any codebase</td><td>Pipeline assumes feature ownership; Coder makes autonomous decisions without deep codebase knowledge</td></tr>
+      <tr><td><strong>Context pressure</strong></td><td>Low &mdash; skills are small, human provides context</td><td>High &mdash; Coder needs existing patterns, conventions, architecture</td></tr>
+      <tr><td><strong>Existing patterns</strong></td><td>Brainstorming says "explore current structure, follow existing patterns"</td><td>copilot-instructions.md has conventions section but Coder may not absorb it fully</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Key Risks for Ralph in Large Codebases</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Coder Autonomy</h4>
+      <p>An autonomous agent picking tasks and implementing without deep architectural context may create patterns conflicting with existing ones.</p>
+    </div>
+    <div class="card">
+      <h4>Reachability Model</h4>
+      <p>Designed for new consumer-facing features, not refactors or bug fixes. In brownfield, you're often modifying existing features.</p>
+    </div>
+    <div class="card">
+      <h4><code>git commit --amend</code></h4>
+      <p>In shared repos with team members, amending commits on rework is risky. Force-push conflicts with collaborative workflows.</p>
+    </div>
+    <div class="card">
+      <h4>Token Cost at Scale</h4>
+      <p>4-6x multiplier across multiple developers adds up fast at enterprise scale.</p>
+    </div>
+  </div>
+
+  <div class="verdict-box warn">
+    <strong>Large codebase verdict:</strong> Superpowers is safer. Its advisory model lets developers maintain control while getting discipline benefits. Ralph's autonomous execution is powerful but risky when there are established conventions, shared branches, and architectural constraints requiring human judgment.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s6">
+  <h2 class="section-title"><span class="num">6</span> Deployment Recommendation</h2>
+
+  <div class="verdict-box info">
+    <strong>Use both, layered.</strong> Superpowers as the always-on foundation; Ralph for scoped feature work on isolated branches.
+  </div>
+
+  <h3>Layered Strategy</h3>
+  <table>
+    <thead><tr><th>Layer</th><th>Tool</th><th>Scope</th><th>Constraints</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-green">Foundation</span></td>
+        <td>Superpowers</td>
+        <td>All projects, all developers</td>
+        <td>Low-risk, low-cost. Enforces TDD, design-first, evidence-before-claims without autonomous action.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">Feature Work</span></td>
+        <td>Ralph</td>
+        <td>Well-scoped new features on feature branches</td>
+        <td>Always HITL mode in shared codebases. Pre-populate copilot-instructions.md with real conventions. Feature branches only, never main.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">Gap Fill</span></td>
+        <td>Superpowers skills</td>
+        <td>During Ralph execution</td>
+        <td>Developers invoke debugging/TDD skills when Ralph's Coder hits issues. Fills Ralph's debugging and discipline gaps.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<section id="s7">
+  <h2 class="section-title"><span class="num">7</span> Internal Patterns Without MCP</h2>
+
+  <p>Six approaches for supplying internal library knowledge and coding conventions to AI assistants, ranked by effort and effectiveness.</p>
+
+  <h3>1. <code>copilot-instructions.md</code></h3>
+  <span class="badge badge-green">Zero effort</span> <span class="badge badge-blue">Always-on</span>
+
+  <p>Auto-loaded by Copilot on every request. Put the top 5-10 critical rules here.</p>
+
+  <pre><code>## Internal Libraries
+
+### @company/auth
+- Import: `import { authenticate, requireRole } from '@company/auth'`
+- NEVER roll custom auth. Always use this library.
+- `authenticate(req)` returns `AuthContext` or throws `UnauthorizedError`
+- `requireRole('admin')` is Express middleware
+
+## Patterns
+
+### API Endpoints
+- All endpoints in `src/api/{resource}/router.ts`
+- Use `createRouter()` from `@company/api-framework`
+- Validation via zod schemas in `src/api/{resource}/schema.ts`</code></pre>
+
+  <div class="verdict-box">
+    <strong>Pros:</strong> Zero setup, always available, works with any AI tool.<br>
+    <strong>Cons:</strong> ~4KB effective before it dilutes attention. Static.
+  </div>
+
+  <h3>2. Scoped Instructions</h3>
+  <span class="badge badge-blue">VS Code Copilot</span> <span class="badge badge-green">Contextual</span>
+
+  <p>In <code>.github/instructions/</code> &mdash; loaded only when editing matching files.</p>
+
+  <pre><code># .github/instructions/api.instructions.md
+---
+applyTo: "src/api/**/*.ts"
+---
+# API Conventions
+- Use `createRouter()` not `express.Router()`
+- Every route needs `authenticate` middleware
+- Response shape: `{ data, meta, errors }`
+- Always validate with zod schema before processing</code></pre>
+
+  <pre><code># .github/instructions/testing.instructions.md
+---
+applyTo: "**/*.test.ts"
+---
+# Testing Conventions
+- Use `createTestContext()` from `@company/test-utils`
+- Database tests use `withTestDb()` wrapper for cleanup
+- Never mock `@company/auth` — use `createTestUser()`</code></pre>
+
+  <div class="verdict-box">
+    <strong>Pros:</strong> Contextual &mdash; only loaded for relevant files. Scales better than a single file.<br>
+    <strong>Cons:</strong> VS Code Copilot specific.
+  </div>
+
+  <h3>3. Example Files as Living Documentation</h3>
+  <span class="badge badge-orange">Moderate effort</span> <span class="badge badge-green">Testable</span>
+
+  <p>Canonical examples the AI reads as real code. Reference from instructions.</p>
+
+  <pre><code>docs/examples/
+  api-endpoint.example.ts      # Canonical API endpoint
+  db-migration.example.ts      # Migration pattern
+  component.example.tsx        # Standard React component</code></pre>
+
+  <div class="verdict-box">
+    <strong>Pros:</strong> AI reads real code, not descriptions. Examples are testable and stay accurate.<br>
+    <strong>Cons:</strong> Must maintain. AI must be told to look at them.
+  </div>
+
+  <h3>4. Per-Directory Convention Files</h3>
+  <span class="badge badge-orange">Moderate effort</span> <span class="badge badge-blue">Discoverable</span>
+
+  <p>Drop <code>CONVENTIONS.md</code> in directories with strong local patterns.</p>
+
+  <pre><code># src/api/CONVENTIONS.md
+- Each resource gets its own directory
+- router.ts exports a single `createXxxRouter()` function
+- schema.ts contains all zod schemas for this resource
+- Never import from sibling resources — use events</code></pre>
+
+  <div class="verdict-box">
+    <strong>Pros:</strong> Discoverable by both AI and humans. Close to the code it governs.<br>
+    <strong>Cons:</strong> Not auto-loaded by Copilot (Claude Code loads CLAUDE.md). Can go stale.
+  </div>
+
+  <h3>5. Library Type Stubs</h3>
+  <span class="badge badge-purple">TypeScript</span> <span class="badge badge-green">LSP-powered</span>
+
+  <p>For internal libraries the AI can't install, create declaration files the LSP picks up.</p>
+
+  <pre><code>// src/types/company-libs.d.ts
+declare module '@company/auth' {
+  export function authenticate(req: Request): Promise&lt;AuthContext&gt;;
+  export function requireRole(role: string): Middleware;
+  export interface AuthContext {
+    userId: string;
+    roles: string[];
+    org: string;
+  }
+}</code></pre>
+
+  <div class="verdict-box">
+    <strong>Pros:</strong> TypeScript LSP picks these up. AI gets full type info without the package.<br>
+    <strong>Cons:</strong> Must keep in sync with real library. TypeScript only.
+  </div>
+
+  <h3>6. Curated Pattern Reference</h3>
+  <span class="badge badge-orange">Moderate effort</span> <span class="badge badge-blue">Centralized</span>
+
+  <p>A living document with code snippets for every internal pattern, referenced from instructions.</p>
+
+  <pre><code># In copilot-instructions.md
+## Internal References
+When implementing features, check `docs/internal-patterns.md` for:
+- Database query patterns
+- Authentication flows
+- Error handling conventions
+- Event bus usage
+- Caching strategies</code></pre>
+
+  <div class="verdict-box">
+    <strong>Pros:</strong> Centralized, easy to update, no tooling needed.<br>
+    <strong>Cons:</strong> AI must be prompted to read it (won't auto-load).
+  </div>
+
+  <h3>Recommended Stack</h3>
+
+  <div class="recommendation-stack">
+    <div class="layer">copilot-instructions.md</div>
+    <div class="desc">Top 5-10 critical rules (always loaded, every request)</div>
+
+    <div class="layer">.github/instructions/*.md</div>
+    <div class="desc">Per-file-type conventions (auto-loaded when editing matching files)</div>
+
+    <div class="layer">docs/examples/*.example.ts</div>
+    <div class="desc">Canonical code patterns (referenced from instructions, testable)</div>
+
+    <div class="layer">src/types/company-libs.d.ts</div>
+    <div class="desc">Type stubs for internal libraries (picked up by LSP automatically)</div>
+  </div>
+
+  <div class="verdict-box good">
+    <strong>This gives you:</strong> always-on rules, contextual guidance, discoverable examples, and type safety &mdash; all without an MCP server.
+  </div>
+</section>
+
+</div>
+
+<footer>
+  Generated for williamg97/vscode-superpowers &bull; March 2026
+</footer>
+
+</body>
+</html>

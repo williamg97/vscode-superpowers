@@ -19,6 +19,11 @@ Guide completion of development work by presenting clear options and handling ch
 
 Run the project's test suite.
 
+```bash
+# Run whatever test command the project uses
+npm test        # or pytest, cargo test, go test ./..., etc.
+```
+
 **If tests fail:**
 ```
 Tests failing (<N> failures). Must fix before completing:
@@ -33,6 +38,7 @@ Stop. Don't proceed to Step 2.
 ### Step 2: Determine Base Branch
 
 ```bash
+# Find the base branch
 git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 ```
 
@@ -60,10 +66,17 @@ Which option?
 #### Option 1: Merge Locally
 
 ```bash
+# Switch to base branch and update
 git checkout <base-branch>
 git pull
+
+# Merge the feature branch
 git merge <feature-branch>
-<test command>   # verify tests on merged result
+
+# Verify tests on merged result
+<test command>
+
+# Clean up the branch
 git branch -d <feature-branch>
 ```
 
@@ -72,7 +85,10 @@ Then: Cleanup worktree (Step 5)
 #### Option 2: Push and Create PR
 
 ```bash
+# Push feature branch to remote
 git push -u origin <feature-branch>
+
+# Create PR with summary
 gh pr create --title "<title>" --body "$(cat <<'EOF'
 ## Summary
 <2-3 bullets of what changed>
@@ -105,6 +121,7 @@ Type 'discard' to confirm.
 
 Wait for exact confirmation. If confirmed:
 ```bash
+# Switch to base and delete feature branch
 git checkout <base-branch>
 git branch -D <feature-branch>
 ```
@@ -116,7 +133,10 @@ Then: Cleanup worktree (Step 5)
 **For Options 1, 2, 4 only:**
 
 ```bash
+# Check if worktree exists
 git worktree list | grep $(git rev-parse --abbrev-ref HEAD)
+
+# Remove it
 git worktree remove <worktree-path>
 ```
 
@@ -126,10 +146,10 @@ git worktree remove <worktree-path>
 
 | Option | Merge | Push | Keep Worktree | Cleanup Branch |
 |--------|-------|------|---------------|----------------|
-| 1. Merge locally | ✓ | — | — | ✓ |
-| 2. Create PR | — | ✓ | ✓ | — |
-| 3. Keep as-is | — | — | ✓ | — |
-| 4. Discard | — | — | — | ✓ (force) |
+| 1. Merge locally | yes | — | — | yes |
+| 2. Create PR | — | yes | yes | — |
+| 3. Keep as-is | — | — | yes | — |
+| 4. Discard | — | — | — | yes (force) |
 
 ## Common Mistakes
 
@@ -144,6 +164,14 @@ git worktree remove <worktree-path>
 **Automatic worktree cleanup for Option 2**
 - Problem: Remove worktree while PR is open and might need more work
 - Fix: Only cleanup for Options 1 and 4
+
+**Merging without re-testing**
+- Problem: Base branch changed since you last tested
+- Fix: Always run tests after merge, before deleting branch
+
+**Force-pushing without asking**
+- Problem: Overwrite others' work on shared branches
+- Fix: Never force-push without explicit user request
 
 ## Red Flags
 
@@ -167,3 +195,4 @@ git worktree remove <worktree-path>
 
 **Pairs with:**
 - `/using-git-worktrees` — Cleans up worktree created by that skill
+- `/verification-before-completion` — Verify tests before proceeding

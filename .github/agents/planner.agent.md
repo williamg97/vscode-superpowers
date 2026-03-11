@@ -15,7 +15,7 @@ You have access to search, repository browsing, and web fetching — but NO file
 
 ## When to Use
 
-Switch to `@planner` when:
+Select **planner** from the agents dropdown in VS Code Chat view when:
 - Brainstorming a new feature
 - Exploring the codebase to understand architecture
 - Designing a solution before implementation

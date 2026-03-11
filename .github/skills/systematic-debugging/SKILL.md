@@ -44,15 +44,42 @@ Complete each phase before proceeding to the next.
 
 **BEFORE attempting ANY fix:**
 
-1. **Read error messages carefully** — don't skip past errors. Read stack traces completely. Note line numbers, file paths, error codes.
+1. **Read error messages carefully** — don't skip past errors. Read stack traces completely. Note line numbers, file paths, error codes. The error message is evidence — treat it as such.
 
 2. **Reproduce consistently** — can you trigger it reliably? What are the exact steps? If not reproducible, gather more data — don't guess.
 
-3. **Check recent changes** — git diff, recent commits, new dependencies, config changes, environmental differences.
+3. **Check recent changes** — git diff, recent commits, new dependencies, config changes, environmental differences. What changed between "working" and "broken"?
 
 4. **Gather evidence in multi-component systems** — before proposing fixes, add diagnostic logging at each component boundary. Run once to see WHERE it breaks. Then investigate that specific component.
 
-5. **Trace data flow** — where does the bad value originate? What called this with the bad value? Keep tracing up until you find the source. Fix at source, not at symptom. See `root-cause-tracing.md` for the complete technique.
+   **Example: API → Queue → Worker → Database**
+   ```
+   Add logging at:
+   - API: Log request payload and response
+   - Queue: Log message enqueue and dequeue
+   - Worker: Log message received and processing start/end
+   - Database: Log query and result
+
+   Run once. Output shows:
+   - API: ✓ sent correct payload
+   - Queue: ✓ message enqueued
+   - Worker: ✓ message received, ✗ processing failed at step 3
+   - Database: (never reached)
+
+   → Root cause is in Worker step 3, not API or Queue
+   ```
+
+5. **Trace data flow** — where does the bad value originate? What called this with the bad value? Keep tracing up until you find the source. Fix at source, not at symptom.
+
+   **Technique:**
+   - Start at the error
+   - Ask: "What value is wrong?"
+   - Ask: "Where did that value come from?"
+   - Ask: "What produced that value?"
+   - Repeat until you find the original source
+   - Fix at the source, not at any intermediate point
+
+   See `root-cause-tracing.md` for the complete technique.
 
 ### Phase 2: Pattern Analysis
 
@@ -73,12 +100,14 @@ Complete each phase before proceeding to the next.
 1. **Create failing test case** — simplest possible reproduction. MUST have before fixing.
 2. **Implement single fix** — address the root cause. ONE change at a time. No "while I'm here" improvements.
 3. **Verify fix** — test passes? No other tests broken? Issue actually resolved?
-4. **If 3+ fixes failed** — STOP. This is an architectural problem, not a bug. Question the pattern, don't try fix #4. Discuss with your human partner before continuing.
+4. **Remove diagnostic code** — clean up any logging/instrumentation added during investigation.
+5. **If 3+ fixes failed** — STOP. This is an architectural problem, not a bug. Question the pattern, don't try fix #4. Discuss with user before continuing.
 
 **Pattern indicating architectural problem:**
 - Each fix reveals new shared state / coupling / problem in different place
 - Fixes require "massive refactoring" to implement
 - Each fix creates new symptoms elsewhere
+- You're fixing the same kind of bug for the third time
 
 ## Red Flags — STOP and Return to Phase 1
 
@@ -93,13 +122,15 @@ Complete each phase before proceeding to the next.
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
-## Your Human Partner's Signals You're Doing It Wrong
+## User Signals You're Doing It Wrong
 
 Watch for these redirections:
 - "Is that not happening?" — You assumed without verifying
 - "Will it show us...?" — You should have added evidence gathering
 - "Stop guessing" — You're proposing fixes without understanding
 - "Ultrathink this" — Question fundamentals, not just symptoms
+- "Did you actually check?" — You claimed without evidence
+- "What does the error say?" — You didn't read the error message
 
 **When you see these:** STOP. Return to Phase 1.
 
@@ -115,15 +146,17 @@ Watch for these redirections:
 | "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
 | "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
 | "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. Question pattern, don't fix again. |
+| "I know this codebase well" | Familiarity breeds assumptions. Follow the process anyway. |
+| "The fix is obvious" | Obvious fixes that skip investigation cause regressions. |
 
 ## Quick Reference
 
 | Phase | Key Activities | Success Criteria |
 |-------|----------------|------------------|
-| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
-| **2. Pattern** | Find working examples, compare | Identify differences |
-| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+| **1. Root Cause** | Read errors, reproduce, check changes, add diagnostics, trace data flow | Understand WHAT and WHY at the source |
+| **2. Pattern** | Find working examples, compare, identify differences | Know what's different between working and broken |
+| **3. Hypothesis** | Form theory, test minimally, one variable at a time | Confirmed root cause or new hypothesis |
+| **4. Implementation** | Create failing test, single fix, verify, clean up diagnostics | Bug resolved, tests pass, no regressions |
 
 ## When Process Reveals "No Root Cause"
 
@@ -133,8 +166,13 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 2. Document what you investigated
 3. Implement appropriate handling (retry, timeout, error message)
 4. Add logging for future investigation
+5. Consider: is this a symptom of a deeper design issue?
 
-**But:** 95% of "no root cause" cases are incomplete investigation.
+**But:** 95% of "no root cause" cases are incomplete investigation. Before concluding "no root cause":
+- Did you trace data flow end-to-end?
+- Did you add diagnostic logging at every boundary?
+- Did you check environmental differences?
+- Did you reproduce it consistently?
 
 ## Supporting Techniques
 

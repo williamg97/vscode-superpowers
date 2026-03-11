@@ -16,7 +16,7 @@ TARGET_GITHUB="$TARGET/.github"
 
 echo "Installing Copilot Superpowers to $TARGET..."
 
-mkdir -p "$TARGET_GITHUB/skills" "$TARGET_GITHUB/instructions" "$TARGET_GITHUB/agents"
+mkdir -p "$TARGET_GITHUB/skills" "$TARGET_GITHUB/instructions" "$TARGET_GITHUB/agents" "$TARGET_GITHUB/prompts"
 
 # Copy all skills
 for skill_dir in "$SCRIPT_DIR/.github/skills"/*/; do
@@ -36,6 +36,12 @@ done
 for agent_file in "$SCRIPT_DIR/.github/agents"/*.agent.md; do
     cp "$agent_file" "$TARGET_GITHUB/agents/"
     echo "  Installed agent: $(basename "$agent_file")"
+done
+
+# Copy all prompts
+for prompt_file in "$SCRIPT_DIR/.github/prompts"/*.prompt.md; do
+    cp "$prompt_file" "$TARGET_GITHUB/prompts/"
+    echo "  Installed prompt: $(basename "$prompt_file")"
 done
 
 # Merge copilot-instructions.md
