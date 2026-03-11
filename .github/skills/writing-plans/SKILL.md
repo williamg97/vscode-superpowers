@@ -1,19 +1,39 @@
 ---
 name: writing-plans
-description: "Use when you have a spec, design, or requirements for a multi-step task, before touching code"
+description: "Use when you have a spec or requirements for a multi-step task, before touching code"
 ---
 
 # Writing Plans
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context and questionable taste. Document everything they need to know: which files to touch, complete code, testing approach, exact commands. Break work into bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+Write comprehensive implementation plans assuming the engineer has zero context for the codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+
+Assume they are a skilled developer, but know almost nothing about the toolset or problem domain. Assume they don't know good test design very well.
+
+**Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
 **Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
+- (User preferences for plan location override this default)
+
+## Scope Check
+
+If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
+
+## File Structure
+
+Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.
+
+- Design units with clear boundaries and well-defined interfaces. Each file should have one clear responsibility.
+- Prefer smaller, focused files over large ones that do too much.
+- Files that change together should live together. Split by responsibility, not by technical layer.
+- In existing codebases, follow established patterns. If a file you're modifying has grown unwieldy, including a split in the plan is reasonable.
+
+This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
 
 ## Bite-Sized Task Granularity
 
-Each step is one action:
+**Each step is one action (2-5 minutes):**
 - "Write the failing test" — step
 - "Run it to make sure it fails" — step
 - "Implement the minimal code to make the test pass" — step
@@ -22,15 +42,17 @@ Each step is one action:
 
 ## Plan Document Header
 
-Every plan MUST start with:
+**Every plan MUST start with this header:**
 
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For Copilot:** REQUIRED: Use `/executing-plans` to implement this plan task-by-task.
+> **For Copilot:** REQUIRED: Use `/subagent-driven-development` (if subagents available) or `/executing-plans` to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** [One sentence describing what this builds]
+
 **Architecture:** [2-3 sentences about approach]
+
 **Tech Stack:** [Key technologies/libraries]
 
 ---
@@ -38,33 +60,48 @@ Every plan MUST start with:
 
 ## Task Structure
 
-Each task follows this format:
-
-```
+````markdown
 ### Task N: [Component Name]
 
 **Files:**
 - Create: `exact/path/to/file.ext`
-- Modify: `exact/path/to/existing.ext`
+- Modify: `exact/path/to/existing.ext:123-145`
 - Test: `tests/exact/path/to/test.ext`
 
-**Step 1: Write the failing test**
-[Complete test code]
+- [ ] **Step 1: Write the failing test**
 
-**Step 2: Run test to verify it fails**
-Run: [exact command]
-Expected: FAIL with "[reason]"
+```typescript
+test('specific behavior', () => {
+  const result = fn(input);
+  expect(result).toBe(expected);
+});
+```
 
-**Step 3: Write minimal implementation**
-[Complete implementation code]
+- [ ] **Step 2: Run test to verify it fails**
 
-**Step 4: Run test to verify it passes**
-Run: [exact command]
+Run: `npm test -- --testPathPattern=test.ext`
+Expected: FAIL with "fn is not defined"
+
+- [ ] **Step 3: Write minimal implementation**
+
+```typescript
+export function fn(input: string): string {
+  return expected;
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `npm test -- --testPathPattern=test.ext`
 Expected: PASS
 
-**Step 5: Commit**
-[exact git commands]
+- [ ] **Step 5: Commit**
+
+```bash
+git add tests/path/test.ext src/path/file.ext
+git commit -m "feat: add specific feature"
 ```
+````
 
 ## Rules
 
@@ -74,15 +111,34 @@ Expected: PASS
 - DRY, YAGNI, TDD, frequent commits
 - Each task should be completable independently
 
-## After Writing the Plan
+## Plan Review Loop
 
-Save the plan to `docs/plans/YYYY-MM-DD-<feature-name>.md` and commit it. Then offer:
+After completing each chunk of the plan:
 
-```
-Plan written to docs/plans/<filename>. Ready to execute?
+1. Dispatch plan-document-reviewer subagent (see `plan-document-reviewer-prompt.md`) for the current chunk
+   - Provide: chunk content, path to spec document
+2. If Issues Found:
+   - Fix the issues in the chunk
+   - Re-dispatch reviewer for that chunk
+   - Repeat until Approved
+3. If Approved: proceed to next chunk (or execution handoff if last chunk)
 
-1. Execute now with `/executing-plans`
-2. Review the plan first, then execute
-```
+**Chunk boundaries:** Use `## Chunk N: <name>` headings to delimit chunks. Each chunk should be ≤1000 lines and logically self-contained.
 
-The plan file's header already contains the instruction to use `/executing-plans` — so a future Copilot session loading the plan will know how to proceed.
+**Review loop guidance:**
+- Same agent that wrote the plan fixes it (preserves context)
+- If loop exceeds 5 iterations, surface to human for guidance
+
+## Execution Handoff
+
+After saving the plan:
+
+**"Plan complete and saved to `docs/plans/<filename>.md`. Ready to execute?"**
+
+**If subagents are available (Claude Code, etc.):**
+- **REQUIRED:** Use `/subagent-driven-development`
+- Fresh subagent per task + two-stage review
+
+**If subagents are NOT available:**
+- Execute plan in current session using `/executing-plans`
+- Batch execution with checkpoints for review
